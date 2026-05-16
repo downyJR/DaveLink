@@ -89,7 +89,7 @@ export declare class PlayerManager {
     destroyPlayer(guildId: string): Promise<void>;
     getPlayers(): Player[];
     getPlayerCount(): number;
-    destroyAll(): void;
+    destroyAll(): Promise<void>;
     private _selectBestNode;
 }
 //# sourceMappingURL=Player.d.ts.map

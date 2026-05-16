@@ -1,6 +1,6 @@
 {
   "name": "davelink",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "High-performance Lavalink client for Node.js - TypeScript-first, memory-optimized, bulletproof audio streaming",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof Player
+// Davelink v4.2.0 - Bulletproof Player
 // Fixed: Queue overflow direction (now keeps newest), event listener leak on migration
 // Added: Destroyed state checks, circuit breaker integration, better error handling
 // ============================================================================
@@ -155,6 +155,7 @@ export class Player extends TypedEventEmitter {
   }
 
   async stop(): Promise<void> {
+    this._ensureNotDestroyed();
     this.state.queue = [];
     await this._updatePlayer({ encodedTrack: null });
     this.state.currentTrack = null;
@@ -162,6 +163,7 @@ export class Player extends TypedEventEmitter {
   }
 
   async skip(): Promise<void> {
+    this._ensureNotDestroyed();
     await this.play({});
   }
 
@@ -662,10 +664,12 @@ export class PlayerManager {
     return this.players.size;
   }
 
-  destroyAll(): void {
+  async destroyAll(): Promise<void> {
+    const promises: Promise<void>[] = [];
     for (const player of this.players.values()) {
-      player.destroy();
+      promises.push(player.destroy().catch(() => { /* ignore cleanup errors */ }));
     }
+    await Promise.all(promises);
     this.players.clear();
   }
 

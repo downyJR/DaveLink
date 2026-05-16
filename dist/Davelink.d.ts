@@ -86,7 +86,7 @@ export declare class DavelinkManager extends TypedEventEmitter {
         plugins: string[];
         cacheSize: number;
     };
-    destroy(): void;
+    destroy(): Promise<void>;
     private _emitError;
 }
 export declare class NodeStore {

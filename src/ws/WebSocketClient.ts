@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof WebSocket Client
+// Davelink v4.2.0 - Bulletproof WebSocket Client
 // Fixed: Unhandled error on terminate during CONNECTING state
 // Added: Message queue clearing on disconnect, proper error handling
 // ============================================================================
@@ -83,7 +83,7 @@ export class WebSocketClient {
   private sessionTimeout: NodeJS.Timeout | null = null;
   private connectErrorHandler: ((err: Error) => void) | null = null;
 
-  constructor(node: NodeOptions, userAgent = 'Davelink/4.1.0') {
+  constructor(node: NodeOptions, userAgent = 'Davelink/4.2.0') {
     this.node = {
       id: node.id ?? `node-${Date.now()}`,
       hostname: node.hostname,
@@ -217,6 +217,7 @@ export class WebSocketClient {
   }
 
   send(data: unknown): boolean {
+    if (this.destroyed) return false;
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       this.messageQueue.push(data);
       return false;
@@ -447,6 +448,7 @@ export class WebSocketClient {
     const attempt = this.backoff.getAttempt();
     const maxRetries = this.node.maxRetryAttempts;
     if (attempt > 0 && attempt > maxRetries) {
+      this.connecting = false;
       this._emitError(DavelinkError.fromPool(ErrorCode.NODE_MAX_RETRIES_EXCEEDED, {
         nodeId: this.node.id,
         reason,
@@ -455,8 +457,9 @@ export class WebSocketClient {
       return;
     }
     this.reconnectAttempts = attempt;
-    const delay = this.backoff.getDelay();
+    // Emit event with current attempt, THEN increment for next delay
     this._emit('reconnecting', attempt);
+    const delay = this.backoff.getDelay();
     this.reconnectTimer = setTimeout(() => {
       this.connecting = false;
       this.connect(this.userId);

@@ -1,6 +1,6 @@
 "use strict";
 // ============================================================================
-// Davelink v4.1.0 - The Ultimate Lavalink Client
+// Davelink v4.2.0 - The Ultimate Lavalink Client
 // TypeScript-first, memory-optimized, bulletproof audio
 // ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -51,7 +51,7 @@ Object.defineProperty(exports, "validateString", { enumerable: true, get: functi
 Object.defineProperty(exports, "validateRange", { enumerable: true, get: function () { return errors_1.validateRange; } });
 Object.defineProperty(exports, "assert", { enumerable: true, get: function () { return errors_1.assert; } });
 // Version
-exports.VERSION = '4.1.0';
+exports.VERSION = '4.2.0';
 // Package info
 exports.name = 'davelink';
 exports.description = 'High-performance Lavalink client for Node.js';

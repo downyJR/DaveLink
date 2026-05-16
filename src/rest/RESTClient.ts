@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof REST Client
+// Davelink v4.2.0 - Bulletproof REST Client
 // Fixed: Destroyed state check, rate limiter precision
 // Added: Request pooling, circuit breaker integration, retry with backoff
 // ============================================================================
@@ -92,7 +92,7 @@ export class RESTClient {
   private destroyed = false;
   private rateLimiter: RateLimiter;
 
-  constructor(node: NodeOptions, userAgent = 'Davelink/4.1.0') {
+  constructor(node: NodeOptions, userAgent = 'Davelink/4.2.0') {
     this.node = {
       hostname: node.hostname,
       port: node.port,
@@ -162,11 +162,17 @@ export class RESTClient {
         });
       }
 
-      const contentType = response.headers.get('content-type') ?? '';
-      if (contentType.includes('application/json')) {
-        return response.json();
+      // Handle 204 No Content
+      if (response.status === 204) {
+        return undefined;
       }
-      return response.text();
+
+      const contentType = response.headers.get('content-type') ?? '';
+      const bodyText = await response.text();
+      if (contentType.includes('application/json') && bodyText) {
+        return JSON.parse(bodyText);
+      }
+      return bodyText || undefined;
     } catch (error) {
       if (error instanceof DavelinkError) throw error;
       if (error instanceof Error && error.name === 'AbortError') {

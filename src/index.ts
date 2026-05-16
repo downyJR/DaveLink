@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - The Ultimate Lavalink Client
+// Davelink v4.2.0 - The Ultimate Lavalink Client
 // TypeScript-first, memory-optimized, bulletproof audio
 // ============================================================================
 
@@ -44,7 +44,7 @@ export type {
 } from './types';
 
 // Version
-export const VERSION = '4.1.0';
+export const VERSION = '4.2.0';
 
 // Package info
 export const name = 'davelink';

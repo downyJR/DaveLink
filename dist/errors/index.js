@@ -1,6 +1,6 @@
 "use strict";
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof Error System
+// Davelink v4.2.0 - Bulletproof Error System
 // Fixed: Pool reinitialization, proper recoverable flag handling
 // Added: Circuit breaker errors, structured logging support
 // ============================================================================

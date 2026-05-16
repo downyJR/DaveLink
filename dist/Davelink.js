@@ -1,6 +1,6 @@
 "use strict";
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof Lavalink Manager
+// Davelink v4.2.0 - Bulletproof Lavalink Manager
 // Fixed: Plugin error handling, search error messages
 // Added: Connection pooling, enhanced metrics, health monitoring
 // ============================================================================
@@ -293,7 +293,7 @@ class DavelinkManager extends EventEmitter_1.TypedEventEmitter {
     getDebugInfo() {
         const nodeList = this.nodes.getAll();
         return {
-            version: '4.1.0',
+            version: '4.2.0',
             nodes: nodeList.length,
             connectedNodes: nodeList.filter(n => n.isConnected()).length,
             players: this.players.getPlayerCount(),
@@ -306,11 +306,11 @@ class DavelinkManager extends EventEmitter_1.TypedEventEmitter {
     // ===================================================================
     // Lifecycle
     // ===================================================================
-    destroy() {
+    async destroy() {
         if (this.destroyed)
             return;
         this.destroyed = true;
-        this.players.destroyAll();
+        await this.players.destroyAll();
         this.nodes.destroyAll();
         this.cache.destroy();
         this.plugins.clear();
@@ -372,8 +372,9 @@ class NodeStore {
                 return best;
             }
             case 'roundrobin': {
-                const idx = this.manager['roundRobinIndex'] % connected.length;
-                this.manager['roundRobinIndex'] = (this.manager['roundRobinIndex'] + 1) % connected.length;
+                // Reset index periodically to prevent Number.MAX_SAFE_INTEGER overflow
+                let idx = this.manager['roundRobinIndex'] % connected.length;
+                this.manager['roundRobinIndex'] = idx + 1;
                 return connected[idx];
             }
             case 'random':

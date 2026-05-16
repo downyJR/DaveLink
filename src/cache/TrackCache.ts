@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof Track Cache
+// Davelink v4.2.0 - Bulletproof Track Cache
 // Fixed: Proper key validation, memory-efficient storage
 // Added: LRU eviction, TTL support, memory pressure handling
 // ============================================================================
@@ -23,6 +23,7 @@ export class TrackCache {
   private evictions = 0;
   private lastCleanup = Date.now();
   private cleanupInterval: NodeJS.Timeout | null = null;
+  private accessCounter = 0; // Monotonic counter for precise LRU ordering
 
   constructor(maxSize = 1000, ttl = 3600000) {
     this.maxSize = maxSize;
@@ -30,6 +31,10 @@ export class TrackCache {
 
     // Periodic cleanup
     this.cleanupInterval = setInterval(() => this._cleanup(), Math.min(ttl / 2, 300000));
+    // Allow process to exit even if cleanup is pending
+    if (this.cleanupInterval.unref) {
+      this.cleanupInterval.unref();
+    }
   }
 
   // ===================================================================
@@ -49,7 +54,7 @@ export class TrackCache {
     const existing = this.cache.get(track.encoded);
     this.cache.set(track.encoded, {
       value: track,
-      lastAccessed: now,
+      lastAccessed: ++this.accessCounter, // Monotonic counter for precise ordering
       createdAt: existing?.createdAt ?? now,
       accessCount: (existing?.accessCount ?? 0) + 1,
     });
@@ -71,8 +76,8 @@ export class TrackCache {
       return undefined;
     }
 
-    // Update access stats
-    entry.lastAccessed = Date.now();
+    // Update access stats with monotonic counter to prevent ties
+    entry.lastAccessed = ++this.accessCounter;
     entry.accessCount++;
     this.hits++;
     return entry.value;
@@ -134,11 +139,11 @@ export class TrackCache {
   // ===================================================================
   private _evictLRU(): void {
     let oldestKey: string | null = null;
-    let oldestTime = Infinity;
+    let oldestAccess = Infinity;
 
     for (const [key, entry] of this.cache) {
-      if (entry.lastAccessed < oldestTime) {
-        oldestTime = entry.lastAccessed;
+      if (entry.lastAccessed < oldestAccess) {
+        oldestAccess = entry.lastAccessed;
         oldestKey = key;
       }
     }

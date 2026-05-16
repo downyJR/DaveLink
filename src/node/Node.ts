@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof Node
+// Davelink v4.2.0 - Bulletproof Node
 // Fixed: Health check not stopped on disconnect, penalty calculation with no stats
 // Added: Circuit breaker, connection pooling, better error propagation
 // ============================================================================
@@ -121,8 +121,8 @@ export class Node {
     this.resumeEnabled = options.resumeEnabled ?? true;
     this.resumeTimeout = options.resumeTimeout ?? 60;
     this.requestTimeout = options.requestTimeout ?? 10000;
-    this.ws = new WebSocketClient(options, options.userAgent ?? 'Davelink/4.1.0');
-    this.rest = new RESTClient(options, options.userAgent ?? 'Davelink/4.1.0');
+    this.ws = new WebSocketClient(options, options.userAgent ?? 'Davelink/4.2.0');
+    this.rest = new RESTClient(options, options.userAgent ?? 'Davelink/4.2.0');
     this.circuitBreaker = new CircuitBreaker(options.circuitThreshold ?? 5, options.circuitTimeout ?? 30000);
 
     // Forward events

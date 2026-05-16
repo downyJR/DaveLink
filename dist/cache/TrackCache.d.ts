@@ -8,6 +8,7 @@ export declare class TrackCache {
     private evictions;
     private lastCleanup;
     private cleanupInterval;
+    private accessCounter;
     constructor(maxSize?: number, ttl?: number);
     setTrack(track: Track): void;
     getTrack(encoded: string | undefined | null): Track | undefined;

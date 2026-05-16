@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Bulletproof Event Emitter
+// Davelink v4.2.0 - Bulletproof Event Emitter
 // Fixed: Memory leak prevention, listener tracking
 // Added: Listener limits, memory-optimized storage
 // ============================================================================

@@ -1,5 +1,5 @@
 // ============================================================================
-// Davelink v4.1.0 - Complete Type Definitions
+// Davelink v4.2.0 - Complete Type Definitions
 // Added: All missing types, better documentation
 // ============================================================================
 
